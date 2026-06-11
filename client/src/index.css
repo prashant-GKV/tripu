@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-traw-bg text-traw-primary font-sans;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-traw-primary text-white font-sans font-medium text-sm px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-card-lg cursor-pointer border-none outline-none;
+  }
+
+  .btn-lime {
+    @apply inline-flex items-center justify-center gap-2 bg-traw-lime text-traw-green font-sans font-semibold text-sm px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-lime-glow-sm cursor-pointer border-none outline-none;
+  }
+
+  .btn-dark {
+    @apply inline-flex items-center justify-center gap-2 bg-traw-green text-white font-sans font-medium text-sm px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 hover:shadow-card-lg cursor-pointer border-none outline-none;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 bg-transparent text-traw-primary border border-traw-border font-sans font-medium text-sm px-6 py-3 rounded-full transition-all duration-300 hover:bg-traw-primary hover:text-white hover:border-traw-primary cursor-pointer outline-none;
+  }
+
+  .section-heading {
+    @apply font-display font-bold text-traw-primary;
+  }
+
+  .card-glass {
+    @apply bg-white/90 backdrop-blur-sm rounded-2xl shadow-card border border-white/60;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .polaroid-card {
+    @apply bg-white p-3 pb-8 rounded-xl shadow-card-lg;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #F5F4F0;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #C8E63C;
+    border-radius: 3px;
+  }
+}
