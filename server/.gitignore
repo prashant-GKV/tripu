@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+.env.local
+# Prisma generated client lives in node_modules; migrations are committed.

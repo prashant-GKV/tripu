@@ -1,0 +1,219 @@
+// Tripu data model — hybrid AI trip-planner + travel-companion-matching.
+// See ../../ARCHITECTURE.md (Data model) and ../../DECISIONS.md (ADR-003).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────────
+enum TripStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum CollaboratorRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+}
+
+// ─── User profile ───────────────────────────────────────────────────────────────
+model Profile {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  displayName  String
+  avatarUrl    String?
+  homeCity     String?
+  bio          String?
+  verified     Boolean  @default(false)
+
+  // Companion-matching preferences
+  travelStyles String[] // e.g. ["hiking","photography","food"]
+  budgetBand   String?  // "economy" | "mid" | "luxury"
+  pacePref     String?  // "relaxed" | "balanced" | "packed"
+  diet         String?  // "veg" | "nonveg" | "egg" | ...
+
+  trips          Trip[]            @relation("OwnedTrips")
+  collaborations Collaborator[]
+  matchedIn      CompanionMatch[]  @relation("MatchCandidate")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Trip / Tripboard ───────────────────────────────────────────────────────────
+model Trip {
+  id        String     @id @default(cuid())
+  owner     Profile    @relation("OwnedTrips", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId   String
+  title     String
+  status    TripStatus @default(DRAFT)
+  isPublic  Boolean    @default(false) // public => browsable without login
+  shareSlug String     @unique @default(cuid())
+
+  startDate DateTime?
+  endDate   DateTime?
+  currency  String     @default("USD")
+  occasion  String? // birthday | anniversary | honeymoon | bachelorette | ...
+
+  travelerComposition Json // { adults, children, infants, elders }
+  preferences         Json // { accommodation, budget, pace, diet, freeText }
+
+  cities         TripCity[]
+  days           Day[]
+  accommodations Accommodation[]
+  collaborators  Collaborator[]
+  matches        CompanionMatch[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([isPublic])
+}
+
+// ─── Route: ordered cities with night allocation ────────────────────────────────
+model TripCity {
+  id         String  @id @default(cuid())
+  trip       Trip    @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId     String
+  city       String
+  country    String
+  lat        Float?
+  lng        Float?
+  orderIndex Int
+  nights     Int     @default(0)
+
+  days           Day[]
+  accommodations Accommodation[]
+
+  @@index([tripId])
+}
+
+// ─── Day in the itinerary ───────────────────────────────────────────────────────
+model Day {
+  id       String    @id @default(cuid())
+  trip     Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId   String
+  city     TripCity? @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  cityId   String?
+  dayIndex Int
+  date     DateTime?
+  summary  String?
+
+  activities Activity[]
+
+  @@index([tripId])
+}
+
+// ─── Activity within a day ──────────────────────────────────────────────────────
+model Activity {
+  id          String  @id @default(cuid())
+  day         Day     @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  dayId       String
+  timeSlot    String? // "morning" | "afternoon" | "evening" | "09:00"
+  title       String
+  description String?
+  category    String? // food | sight | activity | transport | rest
+  lat         Float?
+  lng         Float?
+  estCost     Float?
+  bookingUrl  String?
+  aiRationale String? // why the AI suggested this (transparency)
+  orderIndex  Int     @default(0)
+
+  @@index([dayId])
+}
+
+// ─── Accommodation suggestions (with OTA option blobs) ──────────────────────────
+model Accommodation {
+  id            String    @id @default(cuid())
+  trip          Trip      @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId        String
+  city          TripCity? @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  cityId        String?
+  name          String
+  type          String? // hotel | apartment | hostel | unique
+  pricePerNight Float?
+  lat           Float?
+  lng           Float?
+  options       Json? // simulated OTA comparison rows
+
+  @@index([tripId])
+}
+
+// ─── Collaboration / invites ────────────────────────────────────────────────────
+model Collaborator {
+  id          String           @id @default(cuid())
+  trip        Trip             @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId      String
+  user        Profile?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String?
+  invitedEmail String?
+  role        CollaboratorRole @default(EDITOR)
+  status      InviteStatus     @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  @@unique([tripId, userId])
+  @@index([tripId])
+}
+
+// ─── Companion match (explainable score) ────────────────────────────────────────
+model CompanionMatch {
+  id          String   @id @default(cuid())
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  tripId      String
+  candidate   Profile  @relation("MatchCandidate", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidateId String
+  score       Float // 0..100
+  breakdown   Json // { dateOverlap, destinationOverlap, styleJaccard, budget, pace }
+  createdAt   DateTime @default(now())
+
+  @@unique([tripId, candidateId])
+  @@index([tripId])
+}
+
+// ─── Simulated OTA price quote (clearly mock data) ──────────────────────────────
+model PriceQuote {
+  id        String   @id @default(cuid())
+  refType   String // "accommodation" | "activity"
+  refId     String
+  provider  String // "Agoda" | "Booking" | ... (simulated)
+  price     Float
+  currency  String   @default("USD")
+  url       String?
+  fetchedAt DateTime @default(now())
+
+  @@index([refType, refId])
+}
+
+// ─── Seed content ───────────────────────────────────────────────────────────────
+model Destination {
+  id      String   @id @default(cuid())
+  name    String
+  country String
+  image   String?
+  lat     Float?
+  lng     Float?
+  tags    String[]
+}
+
+model Testimonial {
+  id       String  @id @default(cuid())
+  author   String
+  location String?
+  avatar   String?
+  quote    String
+  rating   Int     @default(5)
+  source   String? // clearly-labelled "seed"
+}

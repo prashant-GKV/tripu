@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import SwooshLine from '../ui/SwooshLine';
 import heroBg from '../../assets/images/hero_bg.png';
 import traveler1 from '../../assets/images/traveler1.png';
@@ -6,17 +6,17 @@ import traveler2 from '../../assets/images/traveler2.png';
 import traveler3 from '../../assets/images/traveler3.png';
 import traveler4 from '../../assets/images/traveler4.png';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: {},
   visible: { transition: { staggerChildren: 0.15 } },
 };
 
-const fadeUp = {
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const gridPhotoVariants = {
+const gridPhotoVariants: Variants = {
   hidden: { opacity: 0, scale: 0.94 },
   visible: (i: number) => ({
     opacity: 1,

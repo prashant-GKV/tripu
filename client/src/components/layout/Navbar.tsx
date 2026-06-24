@@ -6,10 +6,10 @@ import profileImg from '../../assets/images/profile1.png';
 
 const navLinks = [
   { label: 'Home', href: '#hero' },
-  { label: 'Tour Mates', href: '#travel-partners' },
-  { label: 'Destination', href: '#compatibility' },
+  { label: 'Features', href: '#features' },
+  { label: 'Destinations', href: '#destinations' },
   { label: 'Reviews', href: '#testimonials' },
-  { label: 'Contact Us', href: '#newsletter' },
+  { label: 'Contact', href: '#newsletter' },
 ];
 
 export default function Navbar() {
@@ -19,7 +19,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'features', 'travel-partners', 'how-it-works', 'compatibility', 'newsletter'];
+      const sections = ['hero', 'features', 'destinations', 'travel-partners', 'testimonials', 'how-it-works', 'compatibility', 'newsletter'];
       for (const id of sections.reverse()) {
         const el = document.getElementById(id);
         if (el && window.scrollY >= el.offsetTop - 120) {

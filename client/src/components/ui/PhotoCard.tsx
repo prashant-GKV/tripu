@@ -36,11 +36,13 @@ export default function PhotoCard({
       style={{ rotate: rotation }}
       initial={{ opacity: 0, y: 20, rotate: rotation - 5 }}
       whileInView={{ opacity: 1, y: 0, rotate: rotation }}
-      whileHover={{ rotate: 0, scale: 1.06, zIndex: 10 }}
-      transition={{
-        default: { duration: 0.6, ease: 'easeOut', delay },
-        hover: { duration: 0.25, ease: 'easeOut' },
+      whileHover={{
+        rotate: 0,
+        scale: 1.06,
+        zIndex: 10,
+        transition: { duration: 0.25, ease: 'easeOut' },
       }}
+      transition={{ duration: 0.6, ease: 'easeOut', delay }}
       viewport={{ once: true, margin: '0px 0px -50px 0px' }}
     >
       <img

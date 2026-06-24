@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -51,6 +51,40 @@
   .card-glass {
     @apply bg-white/90 backdrop-blur-sm rounded-2xl shadow-card border border-white/60;
   }
+
+  /* ─── Aurora Glass system ─────────────────────────────────────────────── */
+
+  /* Frosted, layered surface — the core "lucid" primitive */
+  .glass {
+    @apply bg-aurora-glass backdrop-blur-xl border border-aurora-line rounded-3xl shadow-glass;
+  }
+  .glass-sm {
+    @apply bg-aurora-glass backdrop-blur-md border border-aurora-line rounded-2xl shadow-glass;
+  }
+
+  /* Gradient "aurora" text */
+  .text-aurora {
+    @apply bg-aurora-text bg-clip-text text-transparent;
+    background-size: 200% auto;
+  }
+
+  /* Primary lucid button — electric cyan→violet with glow */
+  .btn-aurora {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+      font-grotesk font-semibold text-sm text-aurora-deep
+      bg-gradient-to-r from-aurora-cyan to-aurora-violet
+      shadow-glow-cyan transition-all duration-300
+      hover:scale-[1.03] hover:shadow-glow-violet cursor-pointer border-none outline-none;
+  }
+
+  /* Secondary glass button */
+  .btn-glass {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3
+      font-grotesk font-medium text-sm text-aurora-text
+      bg-aurora-glass backdrop-blur-md border border-aurora-line
+      transition-all duration-300 hover:bg-white/10 hover:border-white/20
+      cursor-pointer outline-none;
+  }
 }
 
 @layer utilities {
@@ -72,5 +106,17 @@
   ::-webkit-scrollbar-thumb {
     background: #C8E63C;
     border-radius: 3px;
+  }
+}
+
+/* Accessibility: honour reduced-motion preference across the Aurora theme */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

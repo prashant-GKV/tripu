@@ -20,15 +20,15 @@ const steps = [
   {
     id: 3,
     icon: <Clock size={18} />,
-    title: 'Start On The Time',
-    description: 'Chat, like profiles, and connect before you travel — no pressure, no surprises. Just great adventures.',
+    title: 'Travel Together',
+    description: 'Set off on your shared adventure. Coordinate meetup points, real-time location sharing, and in-trip check-ins for a smooth journey.',
     highlighted: false,
   },
   {
     id: 4,
     icon: <ShieldCheck size={18} />,
-    title: 'Trusted Travelers Like You',
-    description: 'Explore verified travelers based on destination, interests, and compatibility with trust scores.',
+    title: 'Rate & Build Trust',
+    description: 'After every trip, rate your experience. Build your traveler reputation with verified reviews and trust badges that open more opportunities.',
     highlighted: false,
   },
 ];
