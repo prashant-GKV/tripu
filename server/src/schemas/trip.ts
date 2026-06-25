@@ -20,7 +20,9 @@ export const OccasionSchema = z
 
 export const RouteCitySchema = z.object({
   city: z.string().min(1),
-  country: z.string().min(1),
+  // Country is optional — the wizard may collect city names only; the engine
+  // geocodes by city and tolerates an empty country.
+  country: z.string().optional().default(''),
   nights: z.number().int().min(0).default(1),
   lat: z.number().optional(),
   lng: z.number().optional(),
@@ -40,7 +42,8 @@ export const TripBriefSchema = z.object({
     currency: z.string().default('USD'),
   }),
   pace: z.enum(['relaxed', 'balanced', 'packed']).default('balanced'),
-  diet: z.array(z.enum(['veg', 'nonveg', 'egg'])).default([]),
+  // Free-form diet tags (veg/nonveg/egg/vegan/halal/…); the engine labels known ones.
+  diet: z.array(z.string()).default([]),
   interests: z.string().default(''),
   currency: z.string().default('USD'),
 });

@@ -25,7 +25,12 @@ export function buildApp(): FastifyInstance {
     },
   });
 
-  app.register(cors, { origin: config.CLIENT_ORIGIN, credentials: true });
+  // In development, reflect any localhost origin so the frontend connects on
+  // whatever port it runs (Vite 5173, Lovable/TanStack 8080, etc.).
+  app.register(cors, {
+    origin: config.NODE_ENV === 'production' ? config.CLIENT_ORIGIN : true,
+    credentials: true,
+  });
   app.register(cookie);
   app.register(jwt, { secret: config.JWT_SECRET, cookie: { cookieName: 'token', signed: false } });
 
